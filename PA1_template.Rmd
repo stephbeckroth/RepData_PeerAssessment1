@@ -1,25 +1,144 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+author: "Stephanie R. Beck Roth"
+date: "July 14, 2015"
+output: html_document
+keep_md: true
 ---
 
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ## Loading and preprocessing the data
 
+```{r, echo=TRUE}
+fileUrl <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+# Make a Data directory if one doesn't exist
+if (!file.exists("../../Data"))
+  dir.create("../../Data")
+# Stored File Name
+fn <- "../../Data/Factivity.zip" 
+```
 
+This will open the file & import the csv file into mydata:
 
+```{r, echo=TRUE}
+# Download file and store to table w/subset of table in datasub by dates
+download.file(fileUrl, fn, method="curl")
+dataDownloaded <- date()
+mycsv <- unzip(fn, exdir = "../../Data/")
+mydata <- read.csv(mycsv, header = TRUE)
+# Create a date for date variable...
+mydata$datep <- as.POSIXlt(mydata$date, "%Y-%m-%d", tz="")
+```
 ## What is mean total number of steps taken per day?
 
-
+```{r, echo=TRUE}
+# Calculate the total number of steps taken per day
+rtotal <- aggregate(steps ~ date, mydata, sum)
+print("Total number of steps taken per day is:")
+print(rtotal)
+# Create a histogram of the total number of steps taken each day
+png(filename = "plot1.png", width = 480, height = 480,
+    units = "px")
+hist(rtotal$steps, col ="green", bg="transparent", xlab = "Steps",
+     main= "Histogram of Total Steps taken each day")
+dev.off()
+# Print to screen
+hist(rtotal$steps, col ="green", bg="transparent", xlab = "Steps",
+     main= "Histogram of Total Steps taken each day")
+# Calculate the mean total number of steps taken per day
+rmean <- mean(rtotal$steps,na.rm=TRUE)
+print(paste("The mean total of steps per day is:",rmean))
+# Calculate the mean total number of steps taken per day
+rmedian <- median(rtotal$steps,na.rm=TRUE)
+print(paste("The median total of steps per day is:",rmedian))
+```
 
 ## What is the average daily activity pattern?
 
-
+```{r, echo=TRUE}
+int5 <- aggregate(steps ~ interval, mydata, mean)
+png(filename = "plot2.png", width = 480, height = 480,
+    units = "px")
+plot(int5$steps ~int5$interval, type="l", xlab="5 minute interval", ylab="Mean number of steps", main="Timeseries (mean steps by 5 minute interval)")
+dev.off()
+#Print plot to screen
+plot(int5$steps ~int5$interval, type="l", xlab="5 minute interval", ylab="Mean number of steps", main="Timeseries (mean steps by 5 minute interval)")
+# Calculate the maximum interval
+print(paste("The time interval containing the maximum number of steps on average is:",int5$interval[max(int5$steps)==int5$steps]))
+```
 
 ## Imputing missing values
 
-
+```{r, echo=TRUE}
+nna <- sum(is.na(mydata$steps))
+print(paste("The number of NAs stored in steps is:", nna))
+# Find and fill missing steps with the meadian value at the interval
+imval <- aggregate(steps ~ interval, mydata, median)
+mydatanm <- mydata
+for (i in 1:dim(mydata)[1]){
+    if (is.na(mydatanm$steps[i])){ 
+        index <- 1
+        found <- FALSE
+        while (!found & index <= dim(imval)[1]){
+            if (mydatanm$interval[i] == imval$interval[index]){
+                found <- TRUE
+                mydatanm$steps[i] <- imval$steps[index]
+            }
+            else
+                index <- index + 1
+        }
+    }
+}
+print(paste("The number of NAs stored in steps nowis:", sum(is.na(mydatanm$steps))))
+# Summaries on imputed data
+# Calculate the total number of steps taken per day
+rtotalim <- aggregate(steps ~ date, mydatanm, sum)
+print("Total number of steps taken per day is:")
+print(rtotalim)
+# Create a histogram of the total number of steps taken each day
+png(filename = "plot3.png", width = 480, height = 480,
+    units = "px")
+hist(rtotalim$steps, col ="green", bg="transparent", xlab = "Steps",
+     main= "Histogram of Total Steps taken each day (Imputed Data)")
+dev.off()
+# Print to screen
+hist(rtotalim$steps, col ="green", bg="transparent", xlab = "Steps",
+     main= "Histogram of Total Steps taken each day (Imputed Data)")
+# Calculate the mean total number of steps taken per day
+rmeanim <- mean(rtotalim$steps)
+print(paste("The mean total of steps per day with imputation is:",rmeanim))
+# Calculate the mean total number of steps taken per day
+rmedianim <- median(rtotalim$steps)
+print(paste("The median total of steps per day is:",rmedianim))
+# Answer questions:
+print(paste("The total number of steps taken increases by", sum(rtotalim$steps)- sum(rtotal$steps), "with imputation."))
+print(paste("The mean number of steps taken each day increases by", rmeanim-rmean, "with imputation."))
+print(paste("The median number of steps taken each day decreases by", rmedian-rmedianim, "with imputation."))
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+```{r, echo=TRUE}
+mydatanm$wkd <- "weekday"
+for (i in 1:dim(mydatanm)[1]){
+    if (weekdays(mydatanm$datep[i]) == "Sunday" | 
+        weekdays(mydatanm$datep[i]) == "Saturday")
+        mydatanm$wkd[i] <- "weekend"
+}
+mydatanm$wkd <-factor(mydatanm$wkd)
+dtp <- aggregate(steps~interval*wkd,mydatanm,mean)
+library(lattice)
+#print to the file
+trellis.device(device="png",filename="plot4.png")
+p <- xyplot(dtp$steps~dtp$interval|dtp$wkd,dtp,type="l",layout=c(1,2), 
+       xlab="5 minute interval", ylab="Average number of steps taken")
+print(p)
+dev.off()
+#Print to screen
+print (p)
+```
+
+
