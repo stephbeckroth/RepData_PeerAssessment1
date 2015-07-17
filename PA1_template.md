@@ -118,8 +118,8 @@ dev.off()
 ```
 
 ```
-## RStudioGD 
-##         2
+## quartz_off_screen 
+##                 2
 ```
 
 ```r
@@ -128,7 +128,7 @@ hist(rtotal$steps, col ="green", bg="transparent", xlab = "Steps",
      main= "Histogram of Total Steps taken each day")
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) ![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-2.png) 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
 
 ```r
 # Calculate the mean total number of steps taken per day
@@ -162,8 +162,8 @@ dev.off()
 ```
 
 ```
-## RStudioGD 
-##         2
+## quartz_off_screen 
+##                 2
 ```
 
 ```r
@@ -171,7 +171,7 @@ dev.off()
 plot(int5$steps ~int5$interval, type="l", xlab="5 minute interval", ylab="Mean number of steps", main="Timeseries (mean steps by 5 minute interval)")
 ```
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) ![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-2.png) 
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
 
 ```r
 # Calculate the maximum interval
@@ -309,8 +309,8 @@ dev.off()
 ```
 
 ```
-## RStudioGD 
-##         2
+## quartz_off_screen 
+##                 2
 ```
 
 ```r
@@ -319,7 +319,7 @@ hist(rtotalim$steps, col ="green", bg="transparent", xlab = "Steps",
      main= "Histogram of Total Steps taken each day (Imputed Data)")
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) ![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-2.png) 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
 
 ```r
 # Calculate the mean total number of steps taken per day
@@ -388,8 +388,8 @@ dev.off()
 ```
 
 ```
-## RStudioGD 
-##         2
+## quartz_off_screen 
+##                 2
 ```
 
 ```r
@@ -397,7 +397,7 @@ dev.off()
 print (p)
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) ![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-2.png) 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
 
 
 
